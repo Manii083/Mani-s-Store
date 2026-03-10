@@ -1,15 +1,21 @@
 import axios from "axios";
+import { useEffect, useState } from "react";
 import "../components/Header.css";
 import "./HomePage.css";
 import { Header } from "../components/Header";
-import { products } from "../../Starting-Code/data/products";
+
 
 export function HomePage() {
+  const [products, setProducts] = useState([]);
 
-  axios.get("http://localhost:3000/api/products")
-    .then((response) => {
-      console.log(response.data);
-    });
+  useEffect(() => {
+    axios.get("http://localhost:3000/api/products")
+      .then((response) => {
+        setProducts(response.data);
+      });
+  }, []);
+
+
 
   return (
     <>
@@ -20,7 +26,7 @@ export function HomePage() {
           {products.map((product) => {
             return (
               <>
-                <div kay={product.id} className="product-container">
+                <div key={product.id} className="product-container">
                   <div className="product-image-container">
                     <img
                       className="product-image"
