@@ -1,3 +1,4 @@
+
 import "../components/Header.css";
 import "./TrackingPage.css";
 import { Header } from "../components/Header";
@@ -5,10 +6,11 @@ import { Link } from "react-router";
 
 
 export function TrackingPage() {
+  
   return(
     <>
       <title>Order Tracking</title>
-      <Header />
+      <Header  />
 
 
     <div className="tracking-page">
