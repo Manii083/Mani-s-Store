@@ -2,8 +2,12 @@ import dayjs from "dayjs";
 import { formatMoney } from "../../utils/money";
 import { DeliveryOptions } from "./DeliverOptions";
 import axios from "axios";
+import { useState } from "react";
 
 export function OrderSummary({ cart, deliveryOptions, loadCart }) {
+  const [editingId, setEditingId] = useState(null);
+  const [newQuantity, setNewQuantity] = useState(1);
+
   return (
     <div className="order-summary">
       {deliveryOptions.length > 0 &&
@@ -17,18 +21,16 @@ export function OrderSummary({ cart, deliveryOptions, loadCart }) {
           const deleteCartItem = async () => {
             await axios.delete(`/api/cart-items/${cartItem.productId}`);
             await loadCart();
-          }
-
-          const updateCartQuantity = async () => {
-            const newQuantity = prompt("Enter new quantity:", cartItem.quantity);
-            if (newQuantity !== null) {
-              await axios.put(`/api/cart-items/${cartItem.productId}`, {
-                quantity: parseInt(newQuantity),
-              });
-              await loadCart();
-            }
           };
 
+          const updateCartQuantity = async (productId) => {
+            await axios.put(`/api/cart-items/${productId}`, {
+              quantity: parseInt(newQuantity),
+            });
+
+            setEditingId(null);
+            await loadCart();
+          };
 
           return (
             <div key={cartItem.productId} className="cart-item-container">
@@ -54,16 +56,47 @@ export function OrderSummary({ cart, deliveryOptions, loadCart }) {
                         {cartItem.quantity}
                       </span>
                     </span>
-                    <span className="update-quantity-link link-primary" onClick={updateCartQuantity}>
-                      Update
-                    </span>
-                    <span className="delete-quantity-link link-primary" onClick={deleteCartItem}>
+                    {editingId === cartItem.productId ? (
+                      <>
+                        <input
+                          type="number"
+                          min="1"
+                          value={newQuantity}
+                          onChange={(e) => setNewQuantity(e.target.value)}
+                          style={{ width: "40px", marginRight: "6px" }}
+                        />
+
+                        <span
+                          className="link-primary"
+                          onClick={() => updateCartQuantity(cartItem.productId)}
+                        >
+                          Save
+                        </span>
+                      </>
+                    ) : (
+                      <span
+                        className="update-quantity-link link-primary"
+                        onClick={() => {
+                          setEditingId(cartItem.productId);
+                          setNewQuantity(cartItem.quantity);
+                        }}
+                      >
+                        Update
+                      </span>
+                    )}
+                    <span
+                      className="delete-quantity-link link-primary"
+                      onClick={deleteCartItem}
+                    >
                       Delete
                     </span>
                   </div>
                 </div>
-                <DeliveryOptions deliveryOptions={deliveryOptions} cartItem={cartItem} loadCart={loadCart} />
-
+                <DeliveryOptions
+                  deliveryOptions={deliveryOptions}
+                  cartItem={cartItem}
+                  loadCart={loadCart}
+                />
               </div>
             </div>
           );

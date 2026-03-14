@@ -78,7 +78,7 @@ export function OrdersPage({ cart }) {
                               className="buy-again-icon"
                               src="images/icons/buy-again.png"
                             />
-                            <span className="buy-again-message">
+                            <span className="buy-again-message" >
                               Add to Cart
                             </span>
                           </button>
